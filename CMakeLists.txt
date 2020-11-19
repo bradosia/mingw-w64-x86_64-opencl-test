@@ -18,3 +18,15 @@ set(CMAKE_BUILD_TYPE "Release")
 add_subdirectory(src_example/example00)
 add_subdirectory(src_example/example01)
 add_subdirectory(src_example/example02)
+
+# Post build
+add_custom_target(copy_resources ALL
+)
+add_custom_command(TARGET copy_resources POST_BUILD
+    # Make a release directory without all the cmake extras.
+    # This directory can easily be archived and distributed.
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${RELEASE_DIR}"
+    # Create release sub-folders
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${RELEASE_DIR}resources/"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/resources/" "${RELEASE_DIR}resources"
+)

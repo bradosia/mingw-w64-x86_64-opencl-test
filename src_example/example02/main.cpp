@@ -74,7 +74,7 @@ int main() {
         cout << "Error building: " << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device) << std::endl;
         exit(1);
     }
-    
+
     Buffer buffer_A(context, CL_MEM_READ_WRITE, sizeof(int) * n);
     CommandQueue queue(context, default_device);
     queue.enqueueWriteBuffer(buffer_A, CL_TRUE, 0, sizeof(int)*n, A);
@@ -88,7 +88,7 @@ int main() {
     }
 
     queue.enqueueReadBuffer(buffer_A, CL_TRUE, 0, sizeof(int)*n, B);
-    
+
     if (std::equal(std::begin(B), std::end(B), std::begin(C)))
         cout << "Arrays are equal!" << endl;
     else
