@@ -1,9 +1,11 @@
+#define CL_HPP_TARGET_OPENCL_VERSION 220
+
 #include <iostream>
 #include <ctime>
 #ifdef __APPLE__
-    #include <OpenCL/cl.hpp>
+    #include <OpenCL/cl2.hpp>
 #else
-    #include <CL/cl.hpp>
+    #include <CL/cl2.hpp>
 #endif
 
 #define NUM_GLOBAL_WITEMS 1024
@@ -44,7 +46,7 @@ double timeAddVectorsCPU(int n, int k) {
 }
 
 
-void warmup(cl::Context &context, cl::CommandQueue &queue, 
+void warmup(cl::Context &context, cl::CommandQueue &queue,
             cl::Kernel &add, int A[], int B[], int n) {
     int C[n];
     // allocate space
@@ -61,21 +63,20 @@ void warmup(cl::Context &context, cl::CommandQueue &queue,
     add.setArg(0, buffer_A);
     add.setArg(2, buffer_C);
     for (int i=0; i<5; i++)
-        queue.enqueueNDRangeKernel(add, cl::NullRange, cl::NDRange(NUM_GLOBAL_WITEMS), cl::NDRange(32));              
-   
-    queue.enqueueReadBuffer(buffer_C, CL_TRUE, 0, sizeof(int)*n, C); 
-    queue.finish(); 
+        queue.enqueueNDRangeKernel(add, cl::NullRange, cl::NDRange(NUM_GLOBAL_WITEMS), cl::NDRange(32));
+
+    queue.enqueueReadBuffer(buffer_C, CL_TRUE, 0, sizeof(int)*n, C);
+    queue.finish();
 }
 
 
 int main(int argc, char* argv[]) {
-
     bool verbose;
     if (argc == 1 || std::strcmp(argv[1], "0") == 0)
         verbose = true;
     else
         verbose = false;
-    
+
     const int n = 8*32*512;             // size of vectors
     const int k = 10000;                // number of loop iterations
     // const int NUM_GLOBAL_WITEMS = 1024; // number of threads
@@ -89,7 +90,7 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
     cl::Platform default_platform=all_platforms[0];
-    // std::cout << "Using platform: "<<default_platform.getInfo<CL_PLATFORM_NAME>()<<"\n";
+    std::cout << "Using platform: "<<default_platform.getInfo<CL_PLATFORM_NAME>()<<"\n";
 
     // get default device (CPUs, GPUs) of the default platform
     std::vector<cl::Device> all_devices;
@@ -99,9 +100,9 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    // use device[1] because that's a GPU; device[0] is the CPU
-    cl::Device default_device=all_devices[1];
-    // std::cout<< "Using device: "<<default_device.getInfo<CL_DEVICE_NAME>()<<"\n";
+    // device[0] is the GPU
+    cl::Device default_device=all_devices[0];
+    std::cout<< "Using device: "<<default_device.getInfo<CL_DEVICE_NAME>()<<"\n";
 
     cl::Context context({default_device});
     cl::Program::Sources sources;
@@ -144,7 +145,7 @@ int main(int argc, char* argv[]) {
         "               v3[j] = v1[j] + v2[j];"
         "       }"
         "   }"
-        ""    
+        ""
         "   void kernel add_single(global const int* v1, global const int* v2, global int* v3, "
         "                          const int k) { "
         "       int ID = get_global_id(0);"
@@ -227,7 +228,7 @@ int main(int argc, char* argv[]) {
     add_looped_2.setArg(2, buffer_C2);
     add_looped_2.setArg(3, n);
     add_looped_2.setArg(4, k);
-    
+
     queue.enqueueNDRangeKernel(add_looped_2, cl::NullRange, cl::NDRange(NUM_GLOBAL_WITEMS), cl::NDRange(32));
     queue.enqueueReadBuffer(buffer_C2, CL_TRUE, 0, sizeof(int)*n, C);
     queue.finish();
@@ -247,4 +248,3 @@ int main(int argc, char* argv[]) {
     }
     return 0;
 }
-

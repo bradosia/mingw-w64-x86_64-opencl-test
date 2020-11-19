@@ -1,8 +1,10 @@
+#define CL_HPP_TARGET_OPENCL_VERSION 220
+
 #include <iostream>
 #ifdef __APPLE__
-    #include <OpenCL/cl.hpp>
+    #include <OpenCL/cl2.hpp>
 #else
-    #include <CL/cl.hpp>
+    #include <CL/cl2.hpp>
 #endif
 
 int main() {
@@ -25,8 +27,8 @@ int main() {
         exit(1);
     }
 
-    // use device[1] because that's a GPU; device[0] is the CPU
-    cl::Device default_device=all_devices[1];
+    // device[0] is the GPU
+    cl::Device default_device=all_devices[0];
     std::cout<< "Using device: "<<default_device.getInfo<CL_DEVICE_NAME>()<<"\n";
 
     // a context is like a "runtime link" to the device and platform;
@@ -60,7 +62,7 @@ int main() {
         std::cout << "Error building: " << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device) << std::endl;
         exit(1);
     }
-    
+
     // apparently OpenCL only likes arrays ...
     // N holds the number of elements in the vectors we want to add
     int N[1] = {100};
@@ -87,8 +89,13 @@ int main() {
     queue.enqueueWriteBuffer(buffer_N, CL_TRUE, 0, sizeof(int),   N);
 
     // RUN ZE KERNEL
-    cl::KernelFunctor simple_add(cl::Kernel(program, "simple_add"), queue, cl::NullRange, cl::NDRange(10), cl::NullRange);
-    simple_add(buffer_A, buffer_B, buffer_C, buffer_N);
+    cl::Kernel simple_add(program, "simple_add");
+    simple_add.setArg(0, buffer_A);
+    simple_add.setArg(1, buffer_B);
+    simple_add.setArg(2, buffer_C);
+    simple_add.setArg(3, buffer_N);
+    queue.enqueueNDRangeKernel(simple_add,cl::NullRange,cl::NDRange(10),cl::NullRange);
+    queue.finish();
 
     int C[n];
     // read result from GPU to here
@@ -102,4 +109,3 @@ int main() {
 
     return 0;
 }
-

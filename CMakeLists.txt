@@ -1,9 +1,20 @@
 cmake_minimum_required(VERSION 3.4)
 
+set(PROJECT_NAME mingw-w64-x86_64-opencl-test)
+project(${PROJECT_NAME} VERSION 1.0.0 LANGUAGES CXX)
+set(RELEASE_DIR "${CMAKE_BINARY_DIR}/${PROJECT_NAME}/")
+set(INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${RELEASE_DIR})
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.10")
+set(CMAKE_CXX_FLAGS "-O3")
+set(CMAKE_BUILD_TYPE "Release")
+
 # EXAMPLES
 add_subdirectory(src_example/example00)
 add_subdirectory(src_example/example01)
 add_subdirectory(src_example/example02)
-add_subdirectory(src_example/example03)
-add_subdirectory(src_example/example04)
-add_subdirectory(src_example/example05)

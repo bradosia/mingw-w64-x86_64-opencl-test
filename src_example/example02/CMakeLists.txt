@@ -1,7 +1,7 @@
 set(EXENAME example02)
 
 set(SOURCES
-    main.c
+    main.cpp
 )
 
 set(HEADERS
