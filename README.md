@@ -12,7 +12,7 @@ Then, install GCC, cmake, git and dependencies. Confirmed working with Windows 1
 ```shell
 pacman -Syu
 pacman -S mingw-w64-x86_64-gcc cmake git
-pacman -S mingw-w64-x86_64-opencl-headers
+pacman -S mingw-w64-x86_64-opencl-headers mingw-w64-x86_64-opencl-icd-git
 ```
 Build:
 ```shell
