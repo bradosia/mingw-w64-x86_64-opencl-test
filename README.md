@@ -8,8 +8,9 @@ Only addition is cmake files for mingw-w64
 
 ## Windows - MinGW-w64
 Install MSYS2<BR>
-Then, install GCC, cmake, git and dependencies. Confirmed working with Windows 10 as of 11/8/2020.
+Then, install GCC, cmake, git and dependencies. Confirmed working with Windows 10 as of 11/18/2020.
 ```shell
+pacman -Syu
 pacman -S mingw-w64-x86_64-gcc cmake git
 pacman -S mingw-w64-x86_64-opencl-headers
 ```
