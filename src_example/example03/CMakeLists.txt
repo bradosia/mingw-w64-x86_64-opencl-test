@@ -19,7 +19,7 @@ link_directories(
 add_executable(${EXENAME} ${SOURCES})
 
 set(LIBRARIES
-
+	OpenCL
 )
 
 if(WIN32)
